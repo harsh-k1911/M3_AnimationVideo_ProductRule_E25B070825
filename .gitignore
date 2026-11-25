@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+media/
+build/
+**/build/
+**/media/
+.DS_Store

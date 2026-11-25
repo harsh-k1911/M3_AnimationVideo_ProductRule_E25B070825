@@ -1,0 +1,9 @@
+manim
+numpy
+sympy
+faster-whisper
+rapidfuzz
+pydub
+reportlab
+pytest
+pillow

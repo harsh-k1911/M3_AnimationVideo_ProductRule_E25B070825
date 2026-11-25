@@ -1,0 +1,258 @@
+1
+00:00:00,000 --> 00:00:00,770
+Hey!
+
+2
+00:00:00,800 --> 00:00:06,824
+I'm Harsh Kothari, and today we're
+cracking open the product rule — and
+seeing why it actually works.
+
+3
+00:00:06,854 --> 00:00:07,724
+Quick question.
+
+4
+00:00:07,754 --> 00:00:13,874
+If you multiply two functions, is the
+derivative just the derivative of each
+one, multiplied together?
+
+5
+00:00:14,294 --> 00:00:17,634
+Let's test it on the simplest product
+there is: x times x.
+
+6
+00:00:17,734 --> 00:00:21,058
+The guess says one times one — so the
+slope is always one.
+
+7
+00:00:21,088 --> 00:00:23,574
+But we know x squared has derivative two
+x.
+
+8
+00:00:23,694 --> 00:00:26,851
+At x equals three, the real slope is six,
+not one.
+
+9
+00:00:26,882 --> 00:00:28,794
+The guess is completely wrong.
+
+10
+00:00:29,054 --> 00:00:31,137
+So what is the derivative of a product?
+
+11
+00:00:31,167 --> 00:00:33,334
+The answer is hiding inside a rectangle.
+
+12
+00:00:33,729 --> 00:00:35,260
+Here's the real rule.
+
+13
+00:00:35,290 --> 00:00:42,129
+If h of x is f of x times g of x, then h
+prime equals f prime times g, plus f times
+g prime.
+
+14
+00:00:42,449 --> 00:00:45,964
+Prime just means derivative — the
+instantaneous rate of change.
+
+15
+00:00:45,994 --> 00:00:51,509
+In words: derivative of the first times
+the second, plus the first times
+derivative of the second.
+
+16
+00:00:51,849 --> 00:00:57,569
+By the end, you'll be able to explain why
+it's true using a growing rectangle — and
+use it on any product.
+
+17
+00:00:57,967 --> 00:00:59,384
+Picture a rectangle.
+
+18
+00:00:59,414 --> 00:01:04,987
+Its width is f of x, its height is g of x
+— so its area is exactly f times g.
+
+19
+00:01:05,087 --> 00:01:07,394
+Now nudge x by a tiny amount, delta x.
+
+20
+00:01:07,424 --> 00:01:12,527
+Both functions change: the width grows by
+delta f, and the height grows by delta g.
+
+21
+00:01:12,627 --> 00:01:14,658
+How much new area did we gain?
+
+22
+00:01:14,688 --> 00:01:15,551
+Three pieces.
+
+23
+00:01:15,581 --> 00:01:18,162
+A strip on the right: g times delta f.
+
+24
+00:01:18,192 --> 00:01:20,360
+A strip on top: f times delta g.
+
+25
+00:01:20,390 --> 00:01:23,177
+And a tiny corner: delta f times delta g.
+
+26
+00:01:23,207 --> 00:01:25,769
+Now watch what happens as delta x shrinks.
+
+27
+00:01:25,799 --> 00:01:31,107
+The strips get thin — but the corner is
+tiny times tiny, so it disappears much
+faster.
+
+28
+00:01:31,447 --> 00:01:33,748
+Let's turn the picture into algebra.
+
+29
+00:01:33,778 --> 00:01:38,280
+The change in area is g delta f, plus f
+delta g, plus delta f delta g.
+
+30
+00:01:38,310 --> 00:01:40,417
+Now divide everything by delta x.
+
+31
+00:01:40,447 --> 00:01:51,847
+As delta x goes to zero, delta f over
+delta x becomes f prime, delta g over
+delta x becomes g prime, and the last term
+becomes zero times g prime — which is
+zero.
+
+32
+00:01:52,147 --> 00:01:55,987
+What's left is the product rule: f prime
+g, plus f g prime.
+
+33
+00:01:56,456 --> 00:02:02,026
+Let's test it on a product we can check: h
+of x equals x squared times x cubed.
+
+34
+00:02:02,056 --> 00:02:04,592
+So f is x squared, with f prime two x.
+
+35
+00:02:04,622 --> 00:02:07,796
+And g is x cubed, with g prime three x
+squared.
+
+36
+00:02:08,096 --> 00:02:12,877
+Plug into the rule: two x times x cubed,
+plus x squared times three x squared.
+
+37
+00:02:12,907 --> 00:02:17,656
+That's two x to the fourth plus three x to
+the fourth — five x to the fourth.
+
+38
+00:02:17,956 --> 00:02:23,794
+And the check: x squared times x cubed is
+x to the fifth, whose derivative is five x
+to the fourth.
+
+39
+00:02:23,824 --> 00:02:24,624
+It matches!
+
+40
+00:02:24,916 --> 00:02:31,356
+At x equals one, the two parts are two
+times one, plus one times three: two plus
+three, five.
+
+41
+00:02:31,709 --> 00:02:34,796
+But what do that two and that three
+actually mean?
+
+42
+00:02:34,826 --> 00:02:36,355
+Go back to the rectangle.
+
+43
+00:02:36,385 --> 00:02:38,629
+At x equals one, it's a unit square.
+
+44
+00:02:39,049 --> 00:02:44,899
+Let's grow x by smaller and smaller steps,
+and measure each new piece of area,
+divided by delta x.
+
+45
+00:02:44,929 --> 00:02:49,785
+The right strip heads to two, the top
+strip heads to three, and the corner fades
+to zero.
+
+46
+00:02:49,815 --> 00:02:55,249
+So the two is how fast area grows from the
+width stretching, and the three, from the
+height rising.
+
+47
+00:02:55,629 --> 00:03:00,049
+That's the product rule: each factor's
+rate of change, times the other factor.
+
+48
+00:03:00,329 --> 00:03:08,069
+And it works even when you can't multiply
+things out — like x squared sine x: two x
+sine x, plus x squared cos x.
+
+49
+00:03:08,355 --> 00:03:09,382
+Three takeaways.
+
+50
+00:03:09,412 --> 00:03:14,073
+One: the derivative of a product is not
+the product of the derivatives.
+
+51
+00:03:14,103 --> 00:03:19,954
+Two: the product rule, f prime g plus f g
+prime, comes straight from a growing
+rectangle.
+
+52
+00:03:19,984 --> 00:03:24,844
+Three: the corner, delta f delta g,
+vanishes because it's tiny times tiny.
+
+53
+00:03:24,874 --> 00:03:26,195
+Thanks for watching!
