@@ -57,11 +57,20 @@ Narration drives the entire video timeline so visuals never drift from speech. `
 
 ---
 
-## Credits, References & AI Disclosure
+## Credits & References
 
 - **Tools:** Python 3.12, Manim Community Edition, FFmpeg, faster-whisper, SymPy, ReportLab, pytest.
 - **References:**
   - J. Stewart, *Calculus: Early Transcendentals* (product rule section).
   - 3Blue1Brown, *Essence of Calculus*, "Visualizing the chain rule and product rule" (inspiration for the rectangle picture; no footage reused).
 - **Audio:** Narration recorded by Harsh Kothari (currently built with macOS draft narration until final voice files are placed in `e25b070825_Code/voice/`); no music.
-- **AI disclosure:** Script and storyboard drafted with Claude (Anthropic). Animation and build code generated with Google Antigravity (Gemini 4 Hydrogen (High)). Narration timing from Whisper speech-to-text. All maths checked by hand and with SymPy.
+
+## AI Disclosure
+| Tool | Used for | My contribution |
+|---|---|---|
+| Claude (Anthropic) | Drafting the narration script, storyboard plan and build instructions | Chose the topic, length and style; reviewed the script; verified all maths by hand |
+| Google Antigravity (Gemini 4 Hydrogen High) | Generating the Manim animation code, sync/build pipeline, storyboard PDF and docs | Reviewed every scene, requested fixes, approved the final cut |
+| Whisper (via faster-whisper) | Word timestamps to sync animations to my narration; captions file | — |
+
+- Narration is my own recorded voice. No AI voice, voice cloning, AI images or stock footage.
+- Mathematics verified by hand and with SymPy (tests/test_math.py).

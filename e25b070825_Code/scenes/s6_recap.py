@@ -116,13 +116,14 @@ class Scene6Recap(SyncedScene):
         )
         self.remove(takeaways)
 
-        # Beat 6.2 — Closing frame (8 s, silent)
+        # Beat 6.2 — Closing frame (8 s, silent; all text >= 30 pt, wrapped to fit cleanly)
         title_line = Text(
-            f"{config.VIDEO_TITLE}  ·  {config.STUDENT_NAME}  ·  {config.STUDENT_ID}  ·  {config.COURSE_FULL}",
+            f"{config.VIDEO_TITLE} · {config.STUDENT_NAME} · {config.STUDENT_ID}\n{config.COURSE_FULL}",
             font=config.FONT_FAMILY,
-            font_size=26,
+            font_size=32,
             weight="SEMIBOLD",
             color=config.WHITE,
+            line_spacing=1.12,
         )
         key_res = MathTex(
             "\\text{Key result: } (fg)' = f'g + fg'",
@@ -132,28 +133,30 @@ class Scene6Recap(SyncedScene):
         tools_line = Text(
             "Tools: Python, Manim Community Edition, FFmpeg, faster-whisper",
             font=config.FONT_FAMILY,
-            font_size=22,
+            font_size=config.SIZE_LABEL,
             color=config.DIM_TEXT,
         )
         ref_line = Text(
-            "References: J. Stewart, Calculus: Early Transcendentals · 3Blue1Brown, Essence of Calculus (rectangle inspiration; no footage reused)",
+            "References: J. Stewart, Calculus: Early Transcendentals ·\n3Blue1Brown, Essence of Calculus (rectangle inspiration; no footage reused)",
             font=config.FONT_FAMILY,
-            font_size=19,
+            font_size=config.SIZE_LABEL,
             color=config.DIM_TEXT,
+            line_spacing=1.12,
         )
         audio_line = Text(
             f"Audio: narration recorded by {config.STUDENT_NAME}; no music",
             font=config.FONT_FAMILY,
-            font_size=21,
+            font_size=config.SIZE_LABEL,
             color=config.DIM_TEXT,
         )
         ai_line = Text(
-            f"AI disclosure: Script & storyboard drafted with Claude (Anthropic). Code generated with Google Antigravity ({config.MODEL_USED}).\n"
-            "Narration timing from Whisper speech-to-text. All maths checked by hand and with SymPy.",
+            "AI disclosure: Script drafted with Claude (Anthropic). Animation code\n"
+            "generated with Google Antigravity (Gemini). Narration timing via Whisper.\n"
+            "Voice, topic choice, maths verification and final review by me.",
             font=config.FONT_FAMILY,
-            font_size=19,
+            font_size=config.SIZE_LABEL,
             color=config.DIM_TEXT,
-            line_spacing=1.25,
+            line_spacing=1.15,
         )
 
         credits_content = VGroup(
@@ -163,21 +166,23 @@ class Scene6Recap(SyncedScene):
             ref_line,
             audio_line,
             ai_line,
-        ).arrange(DOWN, buff=0.34, aligned_edge=LEFT)
+        ).arrange(DOWN, buff=0.20, aligned_edge=LEFT)
 
         credits_box = RoundedRectangle(
-            width=max(credits_content.width + 0.9, 12.2),
-            height=credits_content.height + 0.9,
+            width=max(credits_content.width + 0.7, 12.2),
+            height=credits_content.height + 0.6,
             corner_radius=0.18,
             fill_color="#111622",
             fill_opacity=0.96,
             stroke_color=config.BLUE,
             stroke_width=2.2,
-        ).move_to([0.0, -0.15, 0.0])
+        ).move_to([0.0, -0.18, 0.0])
         credits_content.move_to(credits_box.get_center())
-        # Ensure nothing exceeds safe margin
-        if credits_box.width > 12.8:
-            VGroup(credits_box, credits_content).scale_to_fit_width(12.8)
+        # Ensure nothing exceeds safe margin (13.0 width, 6.6 height below chapter bar)
+        if credits_box.width > 13.0 or credits_box.height > 6.6:
+            VGroup(credits_box, credits_content).scale(
+                min(13.0 / credits_box.width, 6.6 / credits_box.height)
+            )
 
         self.play_synced(
             FadeIn(credits_box),
