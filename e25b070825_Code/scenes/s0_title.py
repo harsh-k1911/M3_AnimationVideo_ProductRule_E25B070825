@@ -84,20 +84,11 @@ class Scene0Title(SyncedScene):
             color=config.WHITE,
         ).move_to([0.0, -3.15, 0.0])
 
-        self.play_synced(Create(rect), run_time=0.8, label="rect_draw")
-        self.play_synced(
-            Create(bottom_edge),
-            Create(left_edge),
-            LaggedStart(
-                FadeIn(title, shift=UP * 0.2, rate_func=ease_out_back),
-                FadeIn(subtitle, shift=UP * 0.15, rate_func=ease_out_back),
-                FadeIn(course, shift=UP * 0.1),
-                FadeIn(student_line, shift=UP * 0.1),
-                lag_ratio=0.08,
-            ),
-            run_time=1.3,
-            label="title_reveal",
-        )
+        # Frame 0 must immediately show title, concept, name, and Student ID
+        self.add(rect, bottom_edge, left_edge, inside_group, student_line)
+        rect_glow = glow(rect, color=config.BLUE)
+        self.play_synced(FadeIn(rect_glow, run_time=0.6), label="rect_glow_in")
+        self.play_synced(FadeOut(rect_glow, run_time=0.6), label="rect_glow_out")
 
         # @"why" the subtitle glows once
         self.cue("0.1", "why")
