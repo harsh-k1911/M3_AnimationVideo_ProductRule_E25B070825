@@ -26,10 +26,6 @@ class Scene0Title(SyncedScene):
     CHAPTER_INDEX = None
 
     def construct(self):
-        # Beat 0.1
-        # VO: "Hey! I'm Harsh Kothari, and today we're cracking open the product rule — and seeing why it actually works."
-        self.beat("0.1")
-
         rect_w, rect_h = 10.8, 4.9
         rect = Rectangle(
             width=rect_w,
@@ -86,6 +82,11 @@ class Scene0Title(SyncedScene):
 
         # Frame 0 must immediately show title, concept, name, and Student ID
         self.add(rect, bottom_edge, left_edge, inside_group, student_line)
+
+        # Beat 0.1
+        # VO: "Hey! I'm Harsh Kothari, and today we're cracking open the product rule — and seeing why it actually works."
+        self.beat("0.1")
+
         rect_glow = glow(rect, color=config.BLUE)
         self.play_synced(FadeIn(rect_glow, run_time=0.6), label="rect_glow_in")
         self.play_synced(FadeOut(rect_glow, run_time=0.6), label="rect_glow_out")

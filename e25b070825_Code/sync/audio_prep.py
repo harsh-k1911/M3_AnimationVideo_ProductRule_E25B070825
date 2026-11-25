@@ -38,15 +38,19 @@ def _ffprobe_duration(path: Path) -> float:
 def _find_scene_inputs(voice_dir: Path) -> tuple[dict[str, Path], Path | None]:
     scene_files: dict[str, Path] = {}
     full_file: Path | None = None
+    audio_candidates: list[Path] = []
     for p in sorted(voice_dir.iterdir()):
         if p.suffix.lower() not in SUPPORTED_EXTS:
             continue
+        audio_candidates.append(p)
         stem = p.stem.lower()
         if stem == "full":
             full_file = p
         m = re.match(r"^scene(\d)$", stem)
         if m:
             scene_files[m.group(1)] = p
+    if not scene_files and full_file is None and len(audio_candidates) == 1:
+        full_file = audio_candidates[0]
     return scene_files, full_file
 
 
@@ -121,8 +125,8 @@ def _trim_and_tighten_pauses(wav_path: Path) -> None:
     if len(seg) == 0:
         return
 
-    thresh = max(seg.dBFS - 26.0, -48.0)
-    chunks = detect_nonsilent(seg, min_silence_len=150, silence_thresh=thresh, seek_step=10)
+    thresh = max(seg.dBFS - 32.0, -52.0)
+    chunks = detect_nonsilent(seg, min_silence_len=160, silence_thresh=thresh, seek_step=10)
     if not chunks:
         return
 
@@ -135,8 +139,8 @@ def _trim_and_tighten_pauses(wav_path: Path) -> None:
     out = lead_pad
     prev_end: int | None = None
     for idx, (s, e) in enumerate(chunks):
-        s_pad = max(0, s - 30)
-        e_pad = min(len(seg), e + 30)
+        s_pad = max(0, s - 75)
+        e_pad = min(len(seg), e + 75)
         if prev_end is not None:
             gap = s_pad - prev_end
             if gap > max_pause_ms:
@@ -197,8 +201,8 @@ def _detect_and_cut_restarts(wav_path: Path, scene_vo: str) -> list[str]:
     return cuts
 
 
-def _split_full_audio(full_path: Path, out_dir: Path, scenes: dict) -> dict[str, Path]:
-    """Align voice/full.* and split at silence before each scene's first beat."""
+def _split_full_audio(full_path: Path, out_dir: Path, scenes: dict) -> tuple[dict[str, Path], dict[str, str]]:
+    """Align a single full recording and split cleanly in the silence before each scene's first beat."""
     from sync.align import align_full_audio_for_split
 
     temp_wav = out_dir / "_full_clean.wav"
@@ -206,20 +210,20 @@ def _split_full_audio(full_path: Path, out_dir: Path, scenes: dict) -> dict[str,
     split_times = align_full_audio_for_split(temp_wav, scenes)
     seg = AudioSegment.from_wav(temp_wav)
     out_paths: dict[str, Path] = {}
+    sources: dict[str, str] = {}
     scene_ids = sorted(scenes.keys())
     for idx, sid in enumerate(scene_ids):
-        start_ms = max(0, int(split_times[sid] * 1000) - 250)
-        end_ms = (
-            int(split_times[scene_ids[idx + 1]] * 1000) - 200
-            if idx + 1 < len(scene_ids)
-            else len(seg)
-        )
+        start_s = 0.0 if idx == 0 else split_times[sid]
+        end_s = split_times[scene_ids[idx + 1]] if idx + 1 < len(scene_ids) else len(seg) / 1000.0
+        start_ms = max(0, int(round(start_s * 1000)))
+        end_ms = min(len(seg), int(round(end_s * 1000)))
         chunk = seg[start_ms:end_ms]
         dst = out_dir / f"scene{sid}_raw.wav"
         chunk.export(dst, format="wav")
         out_paths[sid] = dst
+        sources[sid] = f"{full_path.name} [{start_s:.2f}s–{end_s:.2f}s]"
     temp_wav.unlink(missing_ok=True)
-    return out_paths
+    return out_paths, sources
 
 
 def _generate_draft_tts(scenes: dict, raw_dir: Path) -> dict[str, Path]:
@@ -259,16 +263,19 @@ def prepare_all_audio(draft: bool = False) -> dict[str, Path]:
     """Prepare cleaned 48 kHz mono WAVs in build/audio/sceneN.wav for Scenes 0..6."""
     config.AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     scenes = parse_script()
+    sources: dict[str, str] = {}
 
     if draft:
         raw_dir = config.BUILD_DIR / "draft_tts"
         inputs = _generate_draft_tts(scenes, raw_dir)
+        sources = {sid: f"macOS say draft ({p.name})" for sid, p in inputs.items()}
     else:
         scene_files, full_file = _find_scene_inputs(config.VOICE_DIR)
         if not scene_files and full_file is not None:
-            inputs = _split_full_audio(full_file, config.AUDIO_DIR, scenes)
+            inputs, sources = _split_full_audio(full_file, config.AUDIO_DIR, scenes)
         else:
             inputs = scene_files
+            sources = {sid: p.name for sid, p in inputs.items()}
 
     missing = [sid for sid in scenes if sid not in inputs]
     if missing:
@@ -284,13 +291,9 @@ def prepare_all_audio(draft: bool = False) -> dict[str, Path]:
         dst = config.AUDIO_DIR / f"scene{sid}.wav"
         before_dur = _ffprobe_duration(src)
         _clean_ffmpeg_chain(src, dst)
-        if not draft:
-            cuts = _detect_and_cut_restarts(dst, scenes[sid].full_vo)
-            for c in cuts:
-                print(f"  [Scene {sid}] {c}")
         _trim_and_tighten_pauses(dst)
         after_dur = _ffprobe_duration(dst)
-        print(f"  Scene {sid}: {before_dur:6.2f}s -> {after_dur:6.2f}s ({dst.name})")
+        print(f"  Scene {sid} (source: {sources.get(sid, src.name)}): {before_dur:6.2f}s -> {after_dur:6.2f}s ({dst.name})")
         cleaned[sid] = dst
     return cleaned
 

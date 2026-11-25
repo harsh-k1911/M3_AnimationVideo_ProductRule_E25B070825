@@ -16,7 +16,7 @@ COURSE_FULL = "M3 Linear Algebra & Calculus"
 MODEL_USED = "Gemini 4 Hydrogen (High)"
 
 # Feature / build flags
-INCLUDE_OPTIONAL = True
+INCLUDE_OPTIONAL = False
 DRAFT = os.environ.get("BUILD_DRAFT", "0") == "1"
 
 # Paths

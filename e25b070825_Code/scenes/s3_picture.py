@@ -394,8 +394,8 @@ class Scene3Picture(SyncedScene):
             color=config.WHITE,
         ).move_to([3.5, 0.85, 0.0])
 
-        bar_x0 = 2.4
-        bar_max_w = 3.2
+        bar_x0 = 2.65
+        bar_max_w = 2.95
         r_const = k_f * h0  # 5.72
         t_const = w0 * k_g  # 6.40
         max_meter = max(r_const, t_const)
@@ -404,7 +404,7 @@ class Scene3Picture(SyncedScene):
             lbl = Text(
                 label_txt,
                 font=config.FONT_FAMILY,
-                font_size=24,
+                font_size=config.SIZE_LABEL,
                 weight="MEDIUM",
                 color=color,
             ).move_to([1.25, y_pos, 0.0])
@@ -691,23 +691,31 @@ class Scene3Picture(SyncedScene):
         rule_glow = glow(rule_box, color=config.BLUE)
         band, sweep = light_sweep(rule_box, color=config.WHITE, run_time=0.7)
 
-        # Clear upper algebra clutter & slide remaining terms into boxed rule
+        # Clear upper algebra clutter & slide remaining terms together into boxed rule
+        src_rule = MathTex(
+            "(fg)'", "=", "g", "\\cdot", "f'", "+", "f", "\\cdot", "g'",
+            font_size=config.SIZE_MATH,
+        ).move_to([2.9, 0.35, 0.0])
+        src_rule[2].set_color(config.PINK)
+        src_rule[4].set_color(config.BLUE)
+        src_rule[6].set_color(config.BLUE)
+        src_rule[8].set_color(config.PINK)
         self.play_synced(
             FadeOut(note_dfg),
             FadeOut(alg_line1),
             FadeOut(chip_t1),
             FadeOut(chip_t2),
             FadeOut(chip_t3),
+            FadeOut(lim_lbl),
+            FadeOut(lim_cap),
+            FadeOut(cont_note),
+            FadeOut(glow_fp),
+            FadeOut(glow_gp),
+            TransformMatchingTex(src_rule, final_rule, transform_mismatches=True),
             FadeOut(a2_lhs),
             FadeOut(a2_p1),
             FadeOut(new_t2),
             FadeOut(new_t4),
-            FadeOut(glow_fp),
-            FadeOut(glow_gp),
-            FadeOut(lim_lbl),
-            FadeOut(lim_cap),
-            FadeOut(cont_note),
-            FadeIn(final_rule),
             Create(rule_box),
             FadeIn(rule_glow),
             run_time=0.75,

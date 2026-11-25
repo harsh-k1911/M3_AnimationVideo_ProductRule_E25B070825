@@ -45,7 +45,7 @@ class Scene6Recap(SyncedScene):
 
         def _make_card(y_pos: float, border_color: str, num_txt: str, eq_mob, desc_str: str, icon_mob):
             box = RoundedRectangle(
-                width=11.6,
+                width=12.4,
                 height=1.45,
                 corner_radius=0.16,
                 fill_color="#121826",
@@ -54,11 +54,11 @@ class Scene6Recap(SyncedScene):
                 stroke_width=2.2,
             ).move_to([0.0, y_pos, 0.0])
             num = Text(num_txt, font=config.FONT_FAMILY, font_size=34, weight="SEMIBOLD", color=border_color)
-            num.move_to(box.get_left() + RIGHT * 0.65)
-            icon_mob.move_to(box.get_left() + RIGHT * 1.85)
-            eq_mob.move_to(box.get_left() + RIGHT * 4.25)
-            desc = Text(desc_str, font=config.FONT_FAMILY, font_size=26, weight="MEDIUM", color=config.DIM_TEXT)
-            desc.move_to(box.get_right() + LEFT * 2.45)
+            num.move_to(box.get_left() + RIGHT * 0.55)
+            icon_mob.move_to(box.get_left() + RIGHT * 1.65)
+            eq_mob.move_to(box.get_left() + RIGHT * 4.15)
+            desc = Text(desc_str, font=config.FONT_FAMILY, font_size=config.SIZE_LABEL, weight="MEDIUM", color=config.DIM_TEXT)
+            desc.move_to(box.get_right() + LEFT * 2.85)
             return VGroup(box, num, icon_mob, eq_mob, desc)
 
         # Card 1 icon: mini shattering formula

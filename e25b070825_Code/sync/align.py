@@ -142,6 +142,22 @@ def _transcribe_with_cache(wav_path: Path, initial_prompt: str, model) -> list[d
     return words
 
 
+_ORDINAL_SYNONYMS = {
+    ("first", "one"),
+    ("one", "first"),
+    ("second", "two"),
+    ("two", "second"),
+    ("third", "three"),
+    ("three", "third"),
+}
+
+
+def _token_similarity(a: str, b: str) -> float:
+    if a == b or (a, b) in _ORDINAL_SYNONYMS:
+        return 100.0
+    return float(fuzz.ratio(a, b))
+
+
 def _align_tokens(script_tokens: list[str], transcript_words: list[dict], duration: float) -> list[dict]:
     """Sequence-align script tokens to transcript words, with rapidfuzz fallback & interpolation."""
     n = len(script_tokens)
@@ -168,10 +184,10 @@ def _align_tokens(script_tokens: list[str], transcript_words: list[dict], durati
             j_cursor = j1
             for i in range(i1, i2):
                 best_j = None
-                best_score = 0
+                best_score = 0.0
                 for j in range(j_cursor, j2):
-                    sc = fuzz.ratio(script_tokens[i], trans_tokens[j])
-                    if sc >= 74 and sc > best_score:
+                    sc = _token_similarity(script_tokens[i], trans_tokens[j])
+                    if sc >= 72.0 and sc > best_score:
                         best_score = sc
                         best_j = j
                 if best_j is not None:
@@ -265,22 +281,65 @@ def _load_overrides() -> dict:
 
 
 def align_full_audio_for_split(wav_path: Path, scenes: dict[str, SceneScript]) -> dict[str, float]:
-    """Align a single full.wav against all scenes to determine scene start split times."""
+    """Align a single full recording against all scenes to find clean silence split midpoints."""
     from faster_whisper import WhisperModel
 
     model = WhisperModel("medium.en", device="cpu", compute_type="int8")
-    all_vo = " ".join(scenes[sid].full_vo for sid in sorted(scenes.keys()))
-    words = _transcribe_with_cache(wav_path, all_vo, model)
+    concise_prompt = (
+        "Harsh Kothari, product rule, h of x, f prime, g prime, "
+        "x squared, x cubed, x to the fourth, x to the fifth, delta x, delta f, delta g, unit square."
+    )
+    words = _transcribe_with_cache(wav_path, concise_prompt, model)
     dur = _audio_duration(wav_path)
 
     all_tokens: list[str] = []
-    scene_start_idx: dict[str, int] = {}
+    scene_ranges: list[tuple[str, int, int]] = []
     for sid in sorted(scenes.keys()):
-        scene_start_idx[sid] = len(all_tokens)
-        all_tokens.extend(_normalize_text(scenes[sid].full_vo))
+        toks = _normalize_text(scenes[sid].full_vo)
+        s_idx = len(all_tokens)
+        all_tokens.extend(toks)
+        scene_ranges.append((sid, s_idx, len(all_tokens)))
 
-    aligned = _align_tokens(all_tokens, words, dur)
-    return {sid: aligned[idx]["start"] for sid, idx in scene_start_idx.items()}
+    # Map each script token to transcript word index
+    trans_tokens = [w["norm"] for w in words]
+    sm = difflib.SequenceMatcher(None, all_tokens, trans_tokens, autojunk=False)
+    matches: list[int | None] = [None] * len(all_tokens)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            for k in range(i2 - i1):
+                matches[i1 + k] = j1 + k
+        elif tag == "replace":
+            j_cursor = j1
+            for i in range(i1, i2):
+                best_j = None
+                best_score = 0.0
+                for j in range(j_cursor, j2):
+                    sc = _token_similarity(all_tokens[i], trans_tokens[j])
+                    if sc >= 72.0 and sc > best_score:
+                        best_score = sc
+                        best_j = j
+                if best_j is not None:
+                    matches[i] = best_j
+                    j_cursor = best_j + 1
+
+    split_times: dict[str, float] = {"0": 0.0}
+    for idx in range(1, len(scene_ranges)):
+        prev_sid, prev_s, prev_e = scene_ranges[idx - 1]
+        cur_sid, cur_s, cur_e = scene_ranges[idx]
+        # Find last matched word of previous scene and first matched word of current scene
+        prev_w_idx = next((matches[i] for i in range(prev_e - 1, prev_s - 1, -1) if matches[i] is not None), None)
+        cur_w_idx = next((matches[i] for i in range(cur_s, cur_e) if matches[i] is not None), None)
+        if prev_w_idx is not None and cur_w_idx is not None and cur_w_idx > prev_w_idx:
+            prev_end_t = words[prev_w_idx]["end"]
+            cur_start_t = words[cur_w_idx]["start"]
+            # If there is any gap, split right at the midpoint of the silence
+            split_times[cur_sid] = 0.5 * (prev_end_t + cur_start_t)
+        elif cur_w_idx is not None:
+            split_times[cur_sid] = max(0.0, words[cur_w_idx]["start"] - 0.25)
+        else:
+            aligned = _align_tokens(all_tokens, words, dur)
+            split_times[cur_sid] = aligned[cur_s]["start"]
+    return split_times
 
 
 def align_all_scenes(audio_files: dict[str, Path] | None = None) -> dict[str, dict]:

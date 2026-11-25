@@ -2,9 +2,10 @@
 
 - **Student:** Harsh Kothari (`e25b070825`)
 - **Topic:** Rules of differentiation → the product rule (`M3 Linear Algebra & Calculus`)
+- **Repository:** https://github.com/harsh-k1911/M3_AnimationVideo_ProductRule_E25B070825
 - **Learning objective:** By the end of this video, the viewer will be able to explain why $(fg)' = f'g + fg'$ using the area of a growing rectangle, and apply it to differentiate a product.
 - **Deliverables:**
-  - Video: [e25b070825_Video.mp4](file:///Users/harsh/Desktop/Capstone_vivas/maths_animation_video/e25b070825_Video.mp4) (1920×1080, 60 fps, H.264 + AAC)
+  - Video: [e25b070825_Video.mp4](file:///Users/harsh/Desktop/Capstone_vivas/maths_animation_video/e25b070825_Video.mp4) (`1920×1080`, `60 fps`, `H.264 + AAC`, `4:17` / `257.02 s`, ~`33.1 MB`)
   - Storyboard: [e25b070825_Storyboard.pdf](file:///Users/harsh/Desktop/Capstone_vivas/maths_animation_video/e25b070825_Storyboard.pdf)
   - Captions: [e25b070825_Captions.srt](file:///Users/harsh/Desktop/Capstone_vivas/maths_animation_video/e25b070825_Captions.srt)
   - Source & assets: [e25b070825_Code/](file:///Users/harsh/Desktop/Capstone_vivas/maths_animation_video/e25b070825_Code)
@@ -63,7 +64,7 @@ Narration drives the entire video timeline so visuals never drift from speech. `
 - **References:**
   - J. Stewart, *Calculus: Early Transcendentals* (product rule section).
   - 3Blue1Brown, *Essence of Calculus*, "Visualizing the chain rule and product rule" (inspiration for the rectangle picture; no footage reused).
-- **Audio:** Narration recorded by Harsh Kothari (currently built with macOS draft narration until final voice files are placed in `e25b070825_Code/voice/`); no music.
+- **Audio:** Narration recorded by Harsh Kothari (`e25b070825_Code/voice/Maths_M3_Voiceover.m4a`); no music.
 
 ## AI Disclosure
 | Tool | Used for | My contribution |
