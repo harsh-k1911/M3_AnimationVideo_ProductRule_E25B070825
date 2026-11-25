@@ -30,7 +30,7 @@ class Scene0Title(SyncedScene):
         # VO: "Hey! I'm Harsh Kothari, and today we're cracking open the product rule — and seeing why it actually works."
         self.beat("0.1")
 
-        rect_w, rect_h = 9.4, 4.9
+        rect_w, rect_h = 10.8, 4.9
         rect = Rectangle(
             width=rect_w,
             height=rect_h,
